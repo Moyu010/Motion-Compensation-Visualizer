@@ -1,0 +1,6 @@
+function [motion_vectors] = motionEstimationByES(frame, block_size, search_range, )
+%MOTIONESTIMATIONBYES Summary of this function goes here
+%   Detailed explanation goes here
+frame = im2gray(frame);
+
+end
