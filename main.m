@@ -1,47 +1,77 @@
+%% Single frame investigation
+% You can wrap this section in loops to plot effects of different
+% strategies, block size etc.
 clear; clc; close all;
-
 % Load the video sequence
 video = VideoReader('source.mp4');
-
-% The first frame is always read as the reference frame for prediction
-current_frame = readFrame(video);
-
-% Initialize the motion compensation parameters
-block_size = 8; % decide what to do if cannot fully divide dimensions(zero padding)
-search_range = 16;
-
-% Loop through the frames of the video sequence
-% while hasFrame(video)
-for frame_number = 1:2 % just the first 2 frames
-    % Read the current frame
+% Basic parameters (IV)
+reference_frame_update_cycle = 6;
+block_size = 16;
+search_range = 7;
+num_of_frames = 2;
+% Viewing parameters
+show_frame = false;
+show_vectors = false;
+show_difference = false;
+pause_time = 0.5; % how long the figures stay unwritten to, if you do multiple frames
+% Acting loop
+frame = 1;
+% DVs you may be interested in
+avg_MAD = 0; % average mean difference during motion estimation, measure of effectiveness/accuracy
+num_compare = 0; % number of blocks that are compared, a measure for cost of estimation, will be the same across frames (* block_size^2 = about number FLOPs)
+mean_difference = 0; % mean difference between prediction frame and original frame, measure of accuracy
+% for if you decide to do multiple frames
+avg_MAD_over_frames = 0; 
+mean_difference_over_frames = 0;
+num_estimate = 0;
+while frame < num_of_frames % adjust how many frames this will be done on
+    % get reference frame every few frames (which is typically transmitted as a whole)
+    if mod(frame, reference_frame_update_cycle) == 1
+        reference_frame = readFrame(video);
+        reference_frame_gray = im2gray(reference_frame);
+        reference_frame_number = frame;
+        frame = frame + 1;
+    end
+    % read the frame
     current_frame = readFrame(video);
-    
-    % Convert the current frame to grayscale
-    current_frame_gray = rgb2gray(current_frame);
-    
-    % If this is the first frame, initialize the reference frame
-    if ~exist('reference_frame', 'var')
-        reference_frame = current_frame_gray;
-        % Write the reference frame to the encoded video
-        writeVideo(encoded_video, reference_frame);
-        continue;
+    current_frame_gray = im2gray(current_frame);
+    % compute the motion vectors, change the method used here
+    [motion_vec, avg_MAD, num_compare] = motionEstimationByES(reference_frame_gray, current_frame_gray, block_size, search_range);
+    avg_MAD_over_frames = avg_MAD_over_frames + avg_MAD;
+    if show_vectors
+        figure(1)
+        plot_motion(motion_vec, block_size);
     end
     
-    % Compute the motion vectors using block matching
-    motion_vectors = motionEstimation(reference_frame, current_frame_gray, block_size, search_range);
+    if show_frame
+        figure(2);
+        subplot(1, 2, 1);
+        imshow(reference_frame);
+        title(sprintf("Reference (Frame %d)", reference_frame_number));
+        subplot(1, 2, 2);
+        imshow(current_frame);
+        title(sprintf("Current (Frame %d)", frame))
+    end
     
-    % Apply motion compensation to the current frame
-    compensated_frame = motionCompensation(reference_frame, motion_vectors, block_size);
-    
-    % Compute the difference between the compensated frame and the current frame
-    difference_frame = current_frame_gray - compensated_frame;
-    
-    % Write the difference frame to the encoded video
-    writeVideo(encoded_video, difference_frame);
-    
-    % Set the compensated frame as the new reference frame
-    reference_frame = compensated_frame;
+    [prediction_difference, mean_difference] = motionCompensation(reference_frame, current_frame, motion_vec, block_size);
+    mean_difference_over_frames = mean_difference_over_frames + mean_difference;
+    if show_difference
+        figure(3);
+        imshow(prediction_difference);
+    end
+    % pause between frames so you can see
+    if show_difference || show_frame || show_vectors
+        pause(pause_time);
+    end
+    frame = frame + 1;
+    num_estimate = num_estimate + 1;
 end
 
-% Close the encoded video writer
-close(encoded_video);
+% reporting
+fprintf("The average MAD when comparing blocks is %0.5f. \n" + ...
+    "The average difference from prediction is %0.5f. \n" + ...
+    "The number of operations done per motion estimation is approximately %d. \n", ...
+    avg_MAD_over_frames/num_estimate, mean_difference_over_frames/num_estimate, num_compare);
+
+
+
