@@ -9,7 +9,7 @@ function [motion_vector, avg_MAD, num_compare] = motionEstimationByES(reference,
 %
 % Ouput
 %   motion_vector: matrix containing motion vectors (row, col, 2) (from top left of blocks)
-%   avg_MAD: average Mean Absolute Difference cost achieved
+%   avg_MAD: average Mean Absolute Difference cost achieved per block
 %   num_compare: the number of block_size^2 compares done (number of MAD computation)
 
 reference = pad_matrix(reference, block_size);
@@ -63,6 +63,6 @@ for r = 1:block_size:row-block_size+1
     end
 end
 
-avg_MAD = MAD_sum/(row/block_size)/(col/block_size);
+avg_MAD = MAD_sum/ceil(row/block_size)/ceil(col/block_size);
 
 end

@@ -3,7 +3,7 @@ clear; clc; close all;
 video = VideoReader('source.mp4');
 reference_frame = readFrame(video);
 reference_frame_gray = im2gray(reference_frame);
-block_size = 16;
+block_size = 7;
 search_range = 7;
 for i = 1:1
     current_frame = readFrame(video);

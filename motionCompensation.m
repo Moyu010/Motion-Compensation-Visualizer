@@ -1,4 +1,4 @@
-function [difference, mean_difference] = motionCompensation(reference, curr, motion_vector, block_size)
+function [predicted_frame, difference, MAD_difference] = motionCompensation(reference, curr, motion_vector, block_size)
 % Computes the prediction and errors with motion vectors
 %
 % Input
@@ -8,9 +8,9 @@ function [difference, mean_difference] = motionCompensation(reference, curr, mot
 %   block_size: side length for square block size
 %
 % Ouput
-%
-%   TO BE DONE HERE
-%   
+%   difference: rgb matrix containing the prediction difference frame
+%   MAD_difference: mean absolute difference between the prediction and
+%   current frame, a measure of accuracy
 
 % pad the reference for ease of matching
 reference = pad_matrix(reference, block_size);
@@ -25,9 +25,11 @@ for row = 1:block_size:img_row
                       displaced_y:displaced_y+block_size-1, :);
     end
 end
+p = predicted_frame;
 % assignment in matlab automatically turns matrix into double, so turn back
 % to uint8 here
-difference = curr - uint8(predicted_frame(1:img_row, 1:img_col, :));
-mean_difference = mean2(difference);
+predicted_frame = uint8(predicted_frame(1:img_row, 1:img_col, :));
+difference = curr - predicted_frame;
+MAD_difference = MAD(curr, predicted_frame);
 end
 
