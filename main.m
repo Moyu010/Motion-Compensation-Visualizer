@@ -6,14 +6,14 @@ clear; clc; close all;
 video = VideoReader('source.mp4');
 % Basic parameters (IV)
 reference_frame_update_cycle = 5;
-block_size = 8;
+block_size = 16;
 search_range = 7;
-num_of_frames = 100;
+num_of_frames = 50;
 % Viewing parameters
 show_frame = false;
 show_vectors = false;
 show_difference = false;
-show_predicted = true;
+show_predicted = false;
 pause_time = 0; % how long the figures stay unwritten to, if you do multiple frames
 
 % Acting loop
@@ -22,14 +22,15 @@ frame = 1;
 avg_MAD = 0; % average mean difference during motion estimation, measure of effectiveness/accuracy
 num_compare = 0; % number of blocks that are compared, a measure for cost of estimation, will be the same across frames (* block_size^2 = about number FLOPs)
 mean_difference_MAD = 0; % mean difference between prediction frame and original frame, measure of accuracy
-% peak signal to noise ratio, a measure of error (peak~peak^2/MSE) in db
-PSNR_func = @(mat_1, mat_2) 10*log10(255^2/rmse(mat_1, mat_2, 'all'));
+% peak signal to noise ratio, a measure of error (peak~peak^2(which is 1 as the frame is converted to double)/MSE(RMSE^2)) in db
+PSNR_func = @(mat_1, mat_2) 10*log10(1/rmse(mat_1, mat_2, 'all')^2);
 
 % the main difference between the MAD should be from the zero padding
 % calculation, but I'm not super certain. 
 % for if you decide to do multiple frames
 avg_MAD_over_frames = 0; 
 mean_difference_MAD_over_frames = 0;
+num_compare_over_frames = 0;
 PSNR_over_frames = 0;
 num_estimate = 0;
 while frame < num_of_frames % adjust how many frames this will be done on
@@ -45,6 +46,7 @@ while frame < num_of_frames % adjust how many frames this will be done on
     current_frame_gray = im2gray(current_frame);
     % compute the motion vectors, change the method used here
     [motion_vec, avg_MAD, num_compare] = motionEstimationByTSS(reference_frame_gray, current_frame_gray, block_size, search_range);
+    num_compare_over_frames = num_compare_over_frames + num_compare;
     avg_MAD_over_frames = avg_MAD_over_frames + avg_MAD;
     if show_vectors
         figure(1)
@@ -90,7 +92,10 @@ fprintf("The average MAD when comparing blocks is %0.5f. \n" + ...
     "The average difference from prediction is %0.5f. \n" + ...
     "The average peak to peak SNR is %.5f. \n"+ ...
     "The number of operations done per motion estimation is approximately %d. \n", ...
-    avg_MAD_over_frames/num_estimate*255, mean_difference_MAD_over_frames/num_estimate*255, PSNR_over_frames/num_estimate, num_compare*block_size^2);
+    avg_MAD_over_frames/num_estimate*255, ...
+    mean_difference_MAD_over_frames/num_estimate*255, ...
+    PSNR_over_frames/num_estimate, ...
+    num_compare_over_frames*block_size^2/num_estimate);
 
 
 

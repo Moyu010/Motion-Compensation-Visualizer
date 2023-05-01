@@ -1,0 +1,8 @@
+Algorithm intro
+https://course.ece.cmu.edu/~ee899/project/deepak_mid.htm
+
+motion compensation intro
+https://dwood3.github.io/cplusplus/2014/05/03/motion-estimation-and-compensation.html
+
+Types of block matching algo
+https://www.dcs.warwick.ac.uk/research/mcg/bmmc/index.html

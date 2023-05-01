@@ -29,12 +29,14 @@ for r = 1:block_size:row-block_size+1
         % e.g. (r, c) = (1, 1), range = (1~16, 1~16)
         current_row_end = r+block_size-1;
         current_col_end = c+block_size-1;
-        step_size = 4;
-        while step_size >= 1
+        % defined for computing which central row is the next step on
+        centre_row = r;
+        centre_col = c;
+        for step_size = [4, 2, 1]
             for hor = [0, -step_size, step_size]
                 for vert = [0, -step_size, step_size]
-                    search_row = r+hor;
-                    search_col = c+vert;
+                    search_row = centre_row+hor;
+                    search_col = centre_col+vert;
                     % only search in image
                     if row-search_row+1 < block_size || search_row <= 0 || ...
                         search_col <= 0 || col-search_col+1 < block_size
@@ -53,17 +55,16 @@ for r = 1:block_size:row-block_size+1
                     % update accordingly
                     if cost < min_cost
                         min_cost = cost;
-                        motion_vector(ceil(r/block_size), ceil(c/block_size), 1) = hor;
-                        motion_vector(ceil(r/block_size), ceil(c/block_size), 2) = vert;
+                        motion_vector(ceil(r/block_size), ceil(c/block_size), 1) = search_row-r;
+                        motion_vector(ceil(r/block_size), ceil(c/block_size), 2) = search_col-c;
                     end
                 end
             end
-            step_size = floor(step_size/2);
+            % update the centre to the new minimum
+            centre_row = r+motion_vector(ceil(r/block_size), ceil(c/block_size), 1);
+            centre_col = c+motion_vector(ceil(r/block_size), ceil(c/block_size), 2);
         end
         MAD_sum = MAD_sum + min_cost;
-        if min_cost == inf
-            fprintf("")
-        end
     end
 end
 
