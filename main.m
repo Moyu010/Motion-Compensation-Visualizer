@@ -30,13 +30,13 @@ num_estimate = 0;
 while frame < num_of_frames % adjust how many frames this will be done on
     % get reference frame every few frames (which is typically transmitted as a whole)
     if mod(frame, reference_frame_update_cycle) == 1
-        reference_frame = readFrame(video);
+        reference_frame = im2double(readFrame(video));
         reference_frame_gray = im2gray(reference_frame);
         reference_frame_number = frame;
         frame = frame + 1;
     end
     % read the frame
-    current_frame = readFrame(video);
+    current_frame = im2double(readFrame(video));
     current_frame_gray = im2gray(current_frame);
     % compute the motion vectors, change the method used here
     [motion_vec, avg_MAD, num_compare] = motionEstimationByES(reference_frame_gray, current_frame_gray, block_size, search_range);
@@ -65,7 +65,7 @@ while frame < num_of_frames % adjust how many frames this will be done on
     if show_predicted
         figure(4);
         subplot(1, 2, 1);
-        imshow(predicted_frame+prediction_difference);
+        imshow(predicted_frame);
         title("Predicted Frame")
         subplot(1, 2, 2);
         imshow(current_frame);

@@ -28,7 +28,7 @@ end
 p = predicted_frame;
 % assignment in matlab automatically turns matrix into double, so turn back
 % to uint8 here
-predicted_frame = uint8(predicted_frame(1:img_row, 1:img_col, :));
+predicted_frame = predicted_frame(1:img_row, 1:img_col, :);
 difference = curr - predicted_frame;
 MAD_difference = MAD(curr, predicted_frame);
 end
