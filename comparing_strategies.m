@@ -3,12 +3,12 @@
 % strategies, block size etc.
 clear; clc; close all;
 % Load the video sequence
-video = VideoReader('source.mp4');
+video = VideoReader('source.avi');
 % Basic parameters (IV)
 reference_frame_update_cycle = 2;
 block_size = 16;
 search_range = 7;
-num_of_frames = 100;
+num_of_frames = 200;
 search_strategy_names = ["No MC", "Exhaustive Search", "Three Step Search", "New Three Step Search"];
 search_strategies = {@dummyMotionEstimation, @motionEstimationByES, @motionEstimationByTSS, @motionEstimationByNTSS};
 % Acting loop
@@ -50,6 +50,9 @@ while frame <= num_of_frames % adjust how many frames this will be done on
         mean_difference_MAD_over_frames(index, num_estimate) = mean_difference_MAD_over_frames(index, num_estimate) + mean_difference_MAD;
         PSNR_over_frames(index, num_estimate) = PSNR_over_frames(index, num_estimate) + PSNR_func(current_frame, predicted_frame);
         index = index + 1;
+        if frame == 11
+            ;
+        end
     end
 end
 
@@ -76,7 +79,6 @@ for data_row = 1:length(axes_labels)
     end
     ylim([0.8*min(line_data(:, :, data_row), [], 'all'), 1.2*max(line_data(:, :, data_row), [], 'all')])
     % show only integer x axis gradations
-    % TODO: y y axis here
     curtick = get(gca, 'xTick');
     xticks(unique(round(curtick)));
     xlabel("frame number");
@@ -93,10 +95,10 @@ figure(2);
 bar_data = squeeze(sum(line_data, 2))/total_estimate;
 for data_row = 1:length(axes_labels)
     subplot(2, 2, data_row);
-    bar(bar_data(:, data_row));
+    bar(diag(bar_data(:, data_row)), 'stacked');
     ylabel(axes_labels(data_row));
     set(gca,'xticklabel',search_strategy_names);
-    text(1:length(bar_data(:, data_row)),bar_data(:, data_row),num2str(bar_data(:, data_row)'),'vert','bottom','horiz','center'); 
+    text(1:length(bar_data(:, data_row)),bar_data(:, data_row),num2str(bar_data(:, data_row)),'vert','bottom','horiz','center'); 
     hold on;
 end
 % set the figure to full screen
