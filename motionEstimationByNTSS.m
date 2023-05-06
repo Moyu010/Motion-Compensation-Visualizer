@@ -64,12 +64,13 @@ for r = 1:block_size:row-block_size+1
                 end
             end
         end
-        MAD_sum = MAD_sum + min_cost;
+
         % Update centre to minimum
         centre_row = r+motion_vector(ceil(r/block_size), ceil(c/block_size), 1);
         centre_col = c+motion_vector(ceil(r/block_size), ceil(c/block_size), 2);
         % Early stopping if the centre (r, c) happen to be the minimum
         if centre_row == r && centre_col == c
+            MAD_sum = MAD_sum + min_cost;
             continue;
         end
         % If the minimum is found in immediate neighbour
@@ -139,8 +140,8 @@ for r = 1:block_size:row-block_size+1
                 centre_row = r+motion_vector(ceil(r/block_size), ceil(c/block_size), 1);
                 centre_col = c+motion_vector(ceil(r/block_size), ceil(c/block_size), 2);
             end
+            MAD_sum = MAD_sum + min_cost;
         end
-        MAD_sum = MAD_sum + min_cost;
     end
 end
 
