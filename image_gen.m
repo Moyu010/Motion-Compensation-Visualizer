@@ -8,12 +8,12 @@ video = VideoReader('source.avi');
 reference_frame_update_cycle = 2;
 block_size = 16;
 search_range = 7;
-num_of_frames = 2*12;
+num_of_frames = 2*12; % pick a frame you want to use here
 % Viewing parameters
-show_frame = true;
-show_vectors = true;
-show_difference = true;
-show_predicted = true;
+show_frame = false;
+show_vectors = false;
+show_difference = false;
+show_predicted = false;
 pause_time = 0; % how long the figures stay unwritten to, if you do multiple frames
 
 % Acting loop
@@ -88,7 +88,16 @@ while frame < num_of_frames % adjust how many frames this will be done on
 end
 
 % saving images
-imwrite("Predicted_frame")
+cwd = pwd+"\images\";
+imwrite(predicted_frame, cwd+"predicted_frame.png");
+imwrite(current_frame, cwd+"current_frame.png");
+imwrite(reference_frame, cwd+"reference_frame.png");
+imwrite(prediction_difference, cwd+"prediction_difference.png");
+figure;
+imshow(reference_frame);
+hold on;
+plot_motion(motion_vec, block_size);
+imwrite(getframe(gca).cdata, cwd+"ref_with_vector.png")
 
 % reporting
 fprintf("The average MAD when comparing blocks is %0.5f. \n" + ...
