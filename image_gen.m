@@ -8,7 +8,7 @@ video = VideoReader('source.avi');
 reference_frame_update_cycle = 2;
 block_size = 16;
 search_range = 7;
-num_of_frames = 2;
+num_of_frames = 2*12;
 % Viewing parameters
 show_frame = true;
 show_vectors = true;
@@ -45,7 +45,7 @@ while frame < num_of_frames % adjust how many frames this will be done on
     current_frame = im2double(readFrame(video));
     current_frame_gray = im2gray(current_frame);
     % compute the motion vectors, change the method used here
-    [motion_vec, avg_MAD, num_compare] = motionEstimationByTSS(reference_frame_gray, current_frame_gray, block_size, search_range);
+    [motion_vec, avg_MAD, num_compare] = motionEstimationByNTSS(reference_frame_gray, current_frame_gray, block_size, search_range);
     num_compare_over_frames = num_compare_over_frames + num_compare;
     avg_MAD_over_frames = avg_MAD_over_frames + avg_MAD;
     if show_vectors
@@ -87,7 +87,10 @@ while frame < num_of_frames % adjust how many frames this will be done on
     num_estimate = num_estimate + 1;
 end
 
-% reporting (*255 for back to rgb value (and greater significance))
+% saving images
+imwrite("Predicted_frame")
+
+% reporting
 fprintf("The average MAD when comparing blocks is %0.5f. \n" + ...
     "The average difference from prediction is %0.5f. \n" + ...
     "The average peak to peak SNR is %.5f. \n"+ ...
