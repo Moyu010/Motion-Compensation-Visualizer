@@ -3,17 +3,17 @@
 % strategies, block size etc.
 clear; clc; close all;
 % Load the video sequence
-video = VideoReader('source.mp4');
+video = VideoReader('source.avi');
 % Basic parameters (IV)
-reference_frame_update_cycle = 5;
+reference_frame_update_cycle = 2;
 block_size = 16;
 search_range = 7;
-num_of_frames = 50;
+num_of_frames = 2;
 % Viewing parameters
-show_frame = false;
-show_vectors = false;
-show_difference = false;
-show_predicted = false;
+show_frame = true;
+show_vectors = true;
+show_difference = true;
+show_predicted = true;
 pause_time = 0; % how long the figures stay unwritten to, if you do multiple frames
 
 % Acting loop
