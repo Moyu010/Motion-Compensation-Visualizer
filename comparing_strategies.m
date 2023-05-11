@@ -11,6 +11,11 @@ search_strategy_names = ["No MC", "Exhaustive Search", "Three Step Search", "New
 search_strategies = {@dummyMotionEstimation, @motionEstimationByES, @motionEstimationByTSS, @motionEstimationByNTSS};
 % Acting loop
 frame = 1;
+% remove starting black frames
+black_frames_number = 5;
+for i = 1:black_frames_number
+    readFrame(video);
+end
 % number of frames that are not reference
 total_estimate = num_of_frames-floor(num_of_frames/reference_frame_update_cycle);
 % peak signal to noise ratio, a measure of error (peak~peak^2(which is 1 as the frame is converted to double)/MSE(RMSE^2)) in db

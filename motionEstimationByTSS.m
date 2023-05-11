@@ -38,26 +38,33 @@ for r = 1:block_size:row-block_size+1
                 for vert = [0, -step_size, step_size]
                     search_row = centre_row+hor;
                     search_col = centre_col+vert;
-                    % only search in image
-                    if row-search_row+1 < block_size || search_row <= 0 || ...
-                        search_col <= 0 || col-search_col+1 < block_size
+                    str_rep = string(search_row)+","+string(search_col);
+                    if isKey(position_dict, str_rep)
+                        % have checked already
                         continue;
-                    end
-                    % defind ranges for search in reference
-                    search_row_end = search_row+block_size-1;
-                    search_col_end = search_col+block_size-1;
-                    % find the diff between search and current block
-                    % remember that current block is fixed, we search for a
-                    % close match in the reference
-                    cost = MAD(curr(r:current_row_end, c:current_col_end), ...
-                               reference(search_row:search_row_end, search_col:search_col_end));
-                    % increment compare number --> for plotting cost
-                    num_compare = num_compare + 1;
-                    % update accordingly
-                    if cost < min_cost
-                        min_cost = cost;
-                        motion_vector(ceil(r/block_size), ceil(c/block_size), 1) = search_row-r;
-                        motion_vector(ceil(r/block_size), ceil(c/block_size), 2) = search_col-c;
+                    else
+                        % only search in image
+                        if row-search_row+1 < block_size || search_row <= 0 || ...
+                            search_col <= 0 || col-search_col+1 < block_size
+                            continue;
+                        end
+                        % defind ranges for search in reference
+                        search_row_end = search_row+block_size-1;
+                        search_col_end = search_col+block_size-1;
+                        % find the diff between search and current block
+                        % remember that current block is fixed, we search for a
+                        % close match in the reference
+                        cost = MAD(curr(r:current_row_end, c:current_col_end), ...
+                                   reference(search_row:search_row_end, search_col:search_col_end));
+                        % increment compare number --> for plotting cost
+                        num_compare = num_compare + 1;
+                        position_dict(str_rep) = cost;
+                        % update accordingly
+                        if cost < min_cost
+                            min_cost = cost;
+                            motion_vector(ceil(r/block_size), ceil(c/block_size), 1) = search_row-r;
+                            motion_vector(ceil(r/block_size), ceil(c/block_size), 2) = search_col-c;
+                        end
                     end
                 end
             end
