@@ -25,14 +25,9 @@ num_compare_over_frames = zeros(length(search_strategies), total_estimate);
 PSNR_over_frames = zeros(length(search_strategies), total_estimate);
 num_estimate = 0;
 
-block_charater = join(['|', char(hex2dec('2588')), '|']);
 while frame <= num_of_frames % adjust how many frames this will be done on
     % Progress bar printing
-    if mod(num_of_frames, frame) == 1
-        clc;
-        percentage = floor(frame/num_of_frames)*10;
-        fprintf("\n%s\n", repelem(block_charater))
-    end
+    fprintf("On frame %d. \n", frame);
 
     % get reference frame every few frames (which is typically transmitted as a whole)
     if mod(frame, reference_frame_update_cycle) == 1
