@@ -5,7 +5,8 @@ function [motion_vector, avg_MAD, num_compare] = motionEstimationByTSS(reference
 %   reference: grayscale matrix as the reference frame
 %   curr: grayscale matrix as the current frame
 %   block_size: side length for square block size
-%   search_range: redundant parameter, for integration with other
+%   search_range: the range which the algorithm will search in, calculated
+%                 [4, 2, 1] in 7 range, or [8, 4, 2, 1] in 15 range (only 2^n-1 allowed)
 %   estimation only. Step size for search is fixed at 4
 %
 % Ouput
@@ -32,7 +33,7 @@ for r = 1:block_size:row-block_size+1
         % defined for computing which central row is the next step on
         centre_row = r;
         centre_col = c;
-        for step_size = [4, 2, 1]
+        for step_size = 2.^[ceil(log2(search_range+1)-1:-1:0)]
             for hor = [0, -step_size, step_size]
                 for vert = [0, -step_size, step_size]
                     search_row = centre_row+hor;

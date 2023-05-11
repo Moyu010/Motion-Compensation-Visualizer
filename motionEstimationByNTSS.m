@@ -6,7 +6,8 @@ function [motion_vector, avg_MAD, num_compare] = motionEstimationByNTSS(referenc
 %   reference: grayscale matrix as the reference frame
 %   curr: grayscale matrix as the current frame
 %   block_size: side length for square block size
-%   search_range: redundant parameter, for integration with other
+%   search_range: the range which the algorithm will search in, calculated
+%                 [4, 2, 1] in 7 range, or [8, 4, 2, 1] in 15 range (only 2^n-1 allowed)
 %   estimation only. Step size for search is fixed at 4
 %
 % Ouput
@@ -15,7 +16,7 @@ function [motion_vector, avg_MAD, num_compare] = motionEstimationByNTSS(referenc
 %   num_compare: the number of block_size^2 compares done (number of MAD computation)
 
 reference = pad_matrix(reference, block_size);
-
+max_step_size = 2^(ceil(log2(search_range+1)-1);
 [row, col] = size(curr);
 MAD_sum = 0;
 num_compare = 0;
@@ -35,7 +36,7 @@ for r = 1:block_size:row-block_size+1
         centre_col = c;
         % compared to TSS, NTSS introduces checking immediate neighbours
         % and early stopping. (So 17 points checked in first step compared to 8)
-        for step_size = [1, 4]
+        for step_size = [1, max_step_size]
             for hor = [0, -step_size, step_size]
                 for vert = [0, -step_size, step_size]
                     search_row = centre_row+hor;
@@ -107,8 +108,8 @@ for r = 1:block_size:row-block_size+1
             % early stop
             continue;
         else
-            % Otherwise, continue with normal TSS (with step size 4 checked already)
-            for step_size = [2, 1]
+            % Otherwise, continue with normal TSS (with max step size checked already)
+            for step_size = 2.^[ceil(log2(search_range+1)-2:-1:0)]
                 for hor = [0, -step_size, step_size]
                     for vert = [0, -step_size, step_size]
                         search_row = centre_row+hor;
