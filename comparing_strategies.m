@@ -64,6 +64,8 @@ axes_labels = [
                "Prediction PSNR";
                "Approximate FLOPs in matching";
               ];
+% give locations to save to
+file_path = pwd+"\plots\";
 % first plot line graph over frames
 figure(1);
 line_data = cat(3, ...
@@ -84,11 +86,15 @@ for data_row = 1:length(axes_labels)
     xlabel("frame number");
     ylabel(axes_labels(data_row));
     legend(cellstr(search_strategy_names), Location="best")
+    hXLabel = get(gca, 'XLabel');
+    set(hXLabel, 'FontSize', 16);
+    hYLabel = get(gca, 'YLabel');
+    set(hYLabel, 'FontSize', 16);
 end
 % set the figure to full screen
 set(figure(1), 'Position', get(0, 'Screensize'));
 % save the figure in full screen
-print('Line_Graph', '-dpng', '-r600');
+print(file_path+'Line_Graph.png', '-dpng', '-r600');
 
 
 figure(2);
@@ -96,15 +102,19 @@ bar_data = squeeze(sum(line_data, 2))/total_estimate;
 for data_row = 1:length(axes_labels)
     subplot(1, 2, data_row);
     bar(diag(bar_data(:, data_row)), 'stacked');
-    ylabel(axes_labels(data_row));
+    ylabel("Average "+axes_labels(data_row), 'FontSize', 16);
     set(gca,'xticklabel',search_strategy_names);
     text(1:length(bar_data(:, data_row)),bar_data(:, data_row),num2str(bar_data(:, data_row)),'vert','bottom','horiz','center'); 
     hold on;
+    hXLabel = get(gca, 'XLabel');
+    set(hXLabel, 'FontSize', 16);
+    hYLabel = get(gca, 'YLabel');
+    set(hYLabel, 'FontSize', 16);
 end
 % set the figure to full screen
 set(figure(2), 'Position', get(0, 'Screensize'));
 % save the figure in full screen
-print('Bar_Graph', '-dpng', '-r600');
+print(file_path+'Bar_Graph.png', '-dpng', '-r600');
 
 
 

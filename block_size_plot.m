@@ -74,7 +74,6 @@ axes_labels = [
               ];
 
 figure(1);
-
 % for each category
 for data_row = 1:length(axes_labels)
     subplot(1, 2, data_row);
@@ -87,12 +86,16 @@ for data_row = 1:length(axes_labels)
     xticks(all_block_sizes);
     xlabel("Block Size");
     ylabel(axes_labels(data_row));
-    legend(cellstr(search_strategy_names), Location="best")
+    legend(cellstr(search_strategy_names), Location="northeast")
+    hXLabel = get(gca, 'XLabel');
+    set(hXLabel, 'FontSize', 16);
+    hYLabel = get(gca, 'YLabel');
+    set(hYLabel, 'FontSize', 16);
 end
 % set the figure to full screen
 set(figure(1), 'Position', get(0, 'Screensize'));
 % save the figure in full screen
-print('Line_Graph_Block_Size', '-dpng', '-r600');
+print(pwd+"\plots\Line_Graph_Block_Size", '-dpng', '-r600');
 
 
 

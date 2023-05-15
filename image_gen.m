@@ -99,6 +99,9 @@ hold on;
 plot_motion(motion_vec, block_size);
 imwrite(getframe(gca).cdata, cwd+"ref_with_vector.png")
 
+figure;
+plot_motion(motion_vec, block_size);
+imwrite(getframe(gca).cdata, cwd+"just_vector.png")
 % reporting
 fprintf("The average MAD when comparing blocks is %0.5f. \n" + ...
     "The average difference from prediction is %0.5f. \n" + ...

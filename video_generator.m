@@ -6,16 +6,21 @@ clear; clc; close all;
 video = VideoReader('source.avi');
 prediction_writer = VideoWriter(pwd+"\video\prediction_out.avi");
 original_writer = VideoWriter(pwd+"\video\original_out.avi");
+original_writer.FrameRate = 2;
+prediction_writer.FrameRate = 2;
 % Basic parameters
 block_size = 16;
 search_range = 7;
-duration_of_vid = 10;
-num_of_frames = video.FrameRate*duration_of_vid;
+duration_of_vid = 7;
+num_of_frames = 25;
 
 open(prediction_writer);
 open(original_writer);
 % Acting loop
-frame = 1;
+frame = 20;
+for i = 1:20
+    readFrame(video);
+end
 
 % read first frame
 reference_frame = im2double(readFrame(video));

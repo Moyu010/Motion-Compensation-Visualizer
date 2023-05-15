@@ -33,6 +33,9 @@ for r = 1:block_size:row-block_size+1
         % defined for computing which central row is the next step on
         centre_row = r;
         centre_col = c;
+        position_dict = dictionary;
+        % set the input type
+        position_dict("1") = 1;
         for step_size = 2.^[ceil(log2(search_range+1)-1:-1:0)]
             for hor = [0, -step_size, step_size]
                 for vert = [0, -step_size, step_size]
